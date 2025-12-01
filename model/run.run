@@ -1,0 +1,16 @@
+
+reset;
+model warp.mod;
+data computerwarp.dat;
+
+option solver gurobi;
+option gurobi_options 'timelimit=600';
+
+solve;
+
+display x, s;
+display Demand_Balance.slack;
+display Machine_Capacity.slack;
+display RM_Budget.slack;
+display RM_Availability.slack;
+display Warehouse_Cap.slack;

@@ -1,0 +1,31 @@
+table product_info "ODBC" "WARP2011W.mdb" "SQL=SELECT Product_Num, Sales_Price FROM Product_Master":
+    P <- [Product_Num], price ~ Sales_Price;
+read table product_info;
+
+table machine_info "ODBC" "WARP2011W.mdb" "SQL=SELECT Machine_Num, OpCost_per_min FROM Machine_Master":
+    M <- [Machine_Num], mach_op_min ~ OpCost_per_min;
+read table machine_info;
+
+table mach_assign "ODBC" "WARP2011W.mdb" "SQL=SELECT Product_Num, Machine_Num, Avg_Duration FROM Machine_Assign":
+    [Product_Num, Machine_Num], proc_time ~ Avg_Duration;
+read table mach_assign;
+
+table rm_info "ODBC" "WARP2011W.mdb" "SQL=SELECT RM_Num, Cost, S_Quantity FROM RM_Master":
+    R <- [RM_Num], rm_cost ~ Cost, rm_avail ~ S_Quantity;
+read table rm_info;
+
+table bom_table "ODBC" "WARP2011W.mdb" "SQL=SELECT Product_Num, RM_Num, Quantity FROM BOM":
+    [Product_Num, RM_Num], bom ~ Quantity;
+read table bom_table;
+
+table warehouse_info "ODBC" "WARP2011W.mdb" "SQL=SELECT Warehouse_Num, Capacity, Op_Cost FROM Warehouse_Master":
+    W <- [Warehouse_Num], warehouse_cap ~ Capacity, wh_op_cost ~ Op_Cost;
+read table warehouse_info;
+
+table demand_raw "ODBC" "WARP2011W.mdb" "SQL=SELECT Product_Num, ROUND(SUM(demand) × 2/7) AS [Demand_Feb] FROM Product_Demand WHERE Month=2 GROUP BY Product_Num ORDER BY Product_Num":
+    [Product_Num], demand ~ Demand_Feb;
+read table demand_raw;
+
+ 
+
+
