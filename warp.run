@@ -1,0 +1,69 @@
+#Mirabel_Luan_luanmira_1010851632
+#Javid_Wu_?_1011314267
+
+reset;
+
+model warp.mod;
+data warp.dat;
+
+option solver gurobi;
+
+solve;
+
+printf "PROFIT\n%f\n\n", Profit > solution.out;
+
+printf "X_VALUES\n" >> solution.out;
+for {p in P}
+    printf "%s %f\n", p, x[p] >> solution.out;
+printf "\n" >> solution.out;
+##################################################################################################
+for {m in M}{
+	if Machine_Capacity[m].slack == 0 then
+		printf "Machine Capacity Constraint [%s] is binding. \n", m > bindingCons.out;
+}
+
+if RM_Budget.slack == 0 then
+	printf "Raw Material Budget Constraint is binding." > bindingCons.out;
+
+for {r in R}{
+	if RM_Availability[r].slack == 0 then
+		printf "Raw Material Availability Constraint [%s] is binding, \n", r > bindingCons.out;
+}
+if Warehouse_Cap.slack == 0 then
+	printf "Warehouse Capacity Constraint is binding" > bindingCons.out;
+
+#################################################################################################
+
+printf "RAW_MATERIAL_TABLE\n" >> solution.out;
+printf "RM  Consumed  Available  Slack  Dual\n" >> solution.out;
+for {r in R}
+    printf "%s %f %f %f %f\n",
+        r,
+        sum{p in P} bom[p,r] * x[p],
+        rm_avail[r],
+        RM_Availability[r].slack,
+        RM_Availability[r].dual
+        >> solution.out;
+printf "\n" >> solution.out;
+
+printf "MACHINE_CONSTRAINTS\n" >> solution.out;
+printf "Machine  Slack  Dual\n" >> solution.out;
+for {m in M}
+    printf "%s %f %f\n",
+        m,
+        Machine_Capacity[m].slack,
+        Machine_Capacity[m].dual
+        >> solution.out;
+printf "\n" >> solution.out;
+
+printf "RM_BUDGET\n" >> solution.out;
+printf "%f %f\n\n",
+    RM_Budget.slack,
+    RM_Budget.dual
+    >> solution.out;
+
+printf "WAREHOUSE_CAP\n" >> solution.out;
+printf "%f %f\n",
+    Warehouse_Cap.slack,
+    Warehouse_Cap.dual
+    >> solution.out;
