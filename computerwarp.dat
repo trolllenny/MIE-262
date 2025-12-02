@@ -22,7 +22,8 @@ table warehouse_info "ODBC" "WARP2011W.mdb" "SQL=SELECT Warehouse_Num, Capacity,
     W <- [Warehouse_Num], warehouse_cap ~ Capacity, wh_op_cost ~ Op_Cost;
 read table warehouse_info;
 
-table demand_raw "ODBC" "WARP2011W.mdb" "SQL=SELECT Product_Num, ROUND(SUM(demand)* 2/7) AS [Demand_Feb] FROM Product_Demand WHERE Month=2 GROUP BY Product_Num ORDER BY Product_Num":
+#table demand_raw "ODBC" "WARP2011W.mdb" "SQL=SELECT Product_Num, ROUND(SUM(demand)* 2/7) AS [Demand_Feb] FROM Product_Demand WHERE Month=2 GROUP BY Product_Num ORDER BY Product_Num":
+table demand_raw "ODBC" "WARP2011W.mdb" "SQL=SELECT Product_Num, 20*AVG(demand) AS [Demand_Feb] FROM Product_Demand WHERE Month=2 GROUP BY Product_Num ORDER BY Product_Num":
     [Product_Num], demand ~ Demand_Feb;
 read table demand_raw;
 
