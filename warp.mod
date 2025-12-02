@@ -5,7 +5,7 @@
 set P;          # set of all products numbers(shoe types)
 set M;          # set of all machines numbers
 set R;          # set of all raw materials
-set W;			#set of all warehouse
+set W;			# set of all warehouses
 
 param price{P} >= 0; #assign a price for all shoes
 param demand{P} >= 0; #assign a demand for all shoes
@@ -27,10 +27,10 @@ param bom{P,R} >= 0 default 0;
 param warehouse_cap{W} >= 0;
 
 # raw material budget (given in project)
-# param rm_budget >= 0;
+
 
 # time capacity: machine seconds available in February
-#param machine_capacity_sec{M} >= 0;
+# param machine_capacity_sec{M} >= 0;
 
 #operational cost for warehouse
 param wh_op_cost{W} >=0;
@@ -39,16 +39,16 @@ param rm_budget := 10000000;
 
 param machine_capacity_min{m in M} := 20160;
 
-param labour_cost := 25;
+param labour_cost := 25; 
 
-param mach_op_min{M};
+param mach_op_min{M}; # operating cost per minute
 
 var x{P} >= 0, integer;   # production quantity (pairs)
 var y{W} binary;   # 1 = warehouse used, 0 = not used
 
 maximize Profit:
     (sum{p in P} price[p] * x[p]) #revenue
-  - (sum{m in M, p in P} mach_op_min[m] * (proc_time[p,m] * x[p])/60) #cost to make shoes using machine
+  - (sum{m in M, p in P} mach_op_min[m] * (proc_time[p,m] * x[p])/60) #cost to make shoes using machine. per second
   - (labour_cost*sum{m in M, p in P}(proc_time[p,m] * x[p])/3600) #labour cost
   - (sum{r in R, p in P} rm_cost[r] * bom[p,r] * x[p]) #cost to buy shoe materials
   - (10 * sum{p in P} max(0,demand[p]-x[p])) #unmet demand
@@ -63,7 +63,7 @@ subject to RM_Budget: #all the materials bought is less than budget
 subject to RM_Availability{r in R}: #all materials bought is less than the materials availible
     sum{p in P} bom[p,r] * x[p] <= rm_avail[r];
 
-subject to WarehouseCap: #the total shoes is less than all operating warehouse
+subject to Warehouse_Cap: #the total shoes is less than all operating warehouse
     sum{p in P} x[p] <= sum{w in W} warehouse_cap[w] * y[w];
 
 # End of model

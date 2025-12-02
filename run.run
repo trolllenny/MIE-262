@@ -7,9 +7,60 @@ option solver gurobi;
 option gurobi_options 'timelimit=600';
 
 solve;
+printf "\n\n************* Solution *************" > warp.out;
+display x,y;
+display Profit;
+display x, y > warp.out;
+display Profit > warp.out;
+#display Demand_Balance.slack;
 
-display x, s;
-display Demand_Balance.slack;
+for {m in M}{
+	if Machine_Capacity[m].slack == 0 then
+		printf "Machine Capacity Constraint [%s] is binding, \n", m > warp.out;
+}
+
+if RM_Budget.slack == 0 then
+	printf "Raw Material Budget Constraint is binding" > warp.out;
+
+for {r in R}{
+	if RM_Availability[r].slack == 0 then
+		printf "Raw Material Availability Constraint [%s] is binding, \n", r > warp.out;
+}
+if Warehouse_Cap.slack == 0 then
+	printf "Warehouse Capacity Constraint is binding" > warp.out;
+
+display Machine_Capacity.slack;
+display RM_Budget.slack;
+display RM_Availability.slack;
+display Warehouse_Cap.slack;
+
+rm_budget := 7000000;
+for {m in M} {
+    machine_capacity_min[m] := 13440;
+}
+solve;
+printf "\n\n************* Q7 *************" > warp.out;
+display x,y;
+display Profit;
+display x, y > warp.out;
+display Profit > warp.out;
+#display Demand_Balance.slack;
+
+for {m in M}{
+	if Machine_Capacity[m].slack == 0 then
+		printf "Machine Capacity Constraint [%s] is binding, \n", m > warp.out;
+}
+
+if RM_Budget.slack == 0 then
+	printf "Raw Material Budget Constraint is binding" > warp.out;
+
+for {r in R}{
+	if RM_Availability[r].slack == 0 then
+		printf "Raw Material Availability Constraint [%s] is binding, \n", r > warp.out;
+}
+if Warehouse_Cap.slack == 0 then
+	printf "Warehouse Capacity Constraint is binding" > warp.out;
+
 display Machine_Capacity.slack;
 display RM_Budget.slack;
 display RM_Availability.slack;
